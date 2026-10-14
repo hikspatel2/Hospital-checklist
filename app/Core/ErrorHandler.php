@@ -125,7 +125,16 @@ class ErrorHandler
                         </div>
                     <?php endif; ?>
 
+                    <?php if (str_contains($e->getMessage(), 'Database Connection Error') || str_contains($e->getMessage(), 'Access denied') || str_contains($e->getMessage(), 'refused')): ?>
+                        <div class="text-start alert alert-warning border-warning shadow-sm my-3 p-3">
+                            <h6 class="fw-bold text-dark mb-1">⚙️ Hostinger Setup Required</h6>
+                            <p class="small text-muted mb-2">The system cannot connect to the MySQL database. Run the 1-Click Setup Wizard to configure your Hostinger database credentials and initialize all tables automatically.</p>
+                            <a href="/install.php" class="btn btn-warning btn-sm fw-bold">🚀 Run 1-Click Hostinger Setup (/install.php)</a>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="mt-4">
+                        <a href="/install.php" class="btn btn-primary me-2">1-Click Setup Wizard</a>
                         <a href="/" class="btn btn-navy me-2">Back to Dashboard</a>
                         <a href="/health" class="btn btn-outline-secondary">System Health</a>
                     </div>
