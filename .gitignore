@@ -7,6 +7,7 @@
 /storage/logs/*.log
 /storage/backups/*.sql
 /storage/backups/*.gz
+/storage/backups/test_*
 /storage/uploads/*
 !/storage/logs/.gitkeep
 !/storage/backups/.gitkeep
