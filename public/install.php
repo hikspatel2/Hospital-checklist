@@ -108,7 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $allowRun) {
                 }
             };
 
-            $schemaFile = $basePath . '/database/schema_complete.sql';
+            $schemaFile = $basePath . '/database/hospital_database.sql';
+            if (!file_exists($schemaFile)) {
+                $schemaFile = $basePath . '/database/schema_complete.sql';
+            }
+
             if (file_exists($schemaFile)) {
                 $sql = file_get_contents($schemaFile);
                 if ($sql) {
@@ -182,7 +186,19 @@ DEFAULT_HOSPITAL_LONGITUDE=72.6025
 GPS_MAX_ALLOWED_RADIUS_METERS=150
 ENV;
 
-            file_put_contents($envFile, $envContent);
+            @file_put_contents($envFile, $envContent);
+
+            // 5b. Also Write PHP Credential File (Guaranteed to work even if Hostinger ignores hidden .env)
+            $credsContent = "<?php\ndeclare(strict_types=1);\nreturn [\n"
+                . "    'DB_HOST' => " . var_export($dbHost, true) . ",\n"
+                . "    'DB_PORT' => {$dbPort},\n"
+                . "    'DB_NAME' => " . var_export($dbName, true) . ",\n"
+                . "    'DB_USER' => " . var_export($dbUser, true) . ",\n"
+                . "    'DB_PASSWORD' => " . var_export($dbPass, true) . ",\n"
+                . "    'DB_CHARSET' => 'utf8mb4',\n"
+                . "    'DB_COLLATION' => 'utf8mb4_unicode_ci',\n"
+                . "];\n";
+            @file_put_contents($basePath . '/config/db_credentials.php', $credsContent);
 
             // 6. Ensure Storage Subdirectories Exist
             foreach (['backups', 'logs', 'uploads'] as $folder) {
@@ -407,12 +423,12 @@ ENV;
 
                     <div class="col-md-6">
                         <label class="form-label" for="db_name">Database Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="db_name" name="db_name" placeholder="e.g. u456035299_hospital" required>
+                        <input type="text" class="form-control" id="db_name" name="db_name" value="<?= htmlspecialchars($_POST['db_name'] ?? 'u456035299_hospital') ?>" placeholder="e.g. u456035299_hospital" required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" for="db_user">Database Username <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="db_user" name="db_user" placeholder="e.g. u456035299_user" required>
+                        <input type="text" class="form-control" id="db_user" name="db_user" value="<?= htmlspecialchars($_POST['db_user'] ?? 'u456035299_hospital') ?>" placeholder="e.g. u456035299_hospital" required>
                     </div>
 
                     <div class="col-12">

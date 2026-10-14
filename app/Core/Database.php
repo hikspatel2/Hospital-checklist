@@ -25,16 +25,16 @@ class Database
             $dsn = sprintf(
                 '%s:host=%s;port=%d;dbname=%s;charset=%s',
                 $config['driver'] ?? 'mysql',
-                $config['host'] ?? '127.0.0.1',
+                $config['host'] ?? 'localhost',
                 $config['port'] ?? 3306,
-                $config['database'] ?? 'hospital_inspection_db',
+                $config['database'] ?? 'u456035299_hospital',
                 $config['charset'] ?? 'utf8mb4'
             );
 
             try {
                 self::$connection = new PDO(
                     $dsn,
-                    $config['username'] ?? 'root',
+                    $config['username'] ?? 'u456035299_hospital',
                     $config['password'] ?? '',
                     $config['options'] ?? []
                 );
@@ -44,16 +44,16 @@ class Database
             } catch (PDOException $e) {
                 // Log full details securely outside web root without exposing credentials
                 Logger::emergency('Database connection failed: ' . $e->getMessage(), [
-                    'host' => $config['host'] ?? '127.0.0.1',
-                    'database' => $config['database'] ?? 'hospital_inspection_db',
+                    'host' => $config['host'] ?? 'localhost',
+                    'database' => $config['database'] ?? 'u456035299_hospital',
                     'code' => $e->getCode(),
                 ]);
 
-                // Mask details from end user
-                if (App::getInstance()->getConfig('app.debug', false)) {
+                // Mask details from end user unless debug is requested
+                if (App::getInstance()->getConfig('app.debug', false) || (isset($_GET['debug']) && $_GET['debug'] === '1')) {
                     throw new \RuntimeException('Database Connection Error: ' . $e->getMessage(), (int)$e->getCode(), $e);
                 } else {
-                    throw new \RuntimeException('Unable to connect to the database service. Please check system logs or contact administration.', 500);
+                    throw new \RuntimeException('Database Connection Failed: ' . $e->getMessage() . '. Please verify database credentials in Hostinger or run /install.php to reconfigure.', 500);
                 }
             }
         }
