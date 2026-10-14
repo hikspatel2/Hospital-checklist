@@ -29,10 +29,20 @@ use App\Controllers\UserController;
 // ------------------------------------------------------------------------------
 // Public & System Telemetry Routes
 // ------------------------------------------------------------------------------
-$router->get('/install', function() {
-    header('Location: /install.php');
+$installHandler = function() {
+    $installFile = ROOT_PATH . '/public/install.php';
+    if (file_exists($installFile)) {
+        require $installFile;
+        exit;
+    }
+    header('Content-Type: text/plain');
+    echo "install.php not found. Please ensure public/install.php is uploaded.";
     exit;
-});
+};
+$router->get('/install', $installHandler, ['no-csrf']);
+$router->get('/install.php', $installHandler, ['no-csrf']);
+$router->post('/install', $installHandler, ['no-csrf']);
+$router->post('/install.php', $installHandler, ['no-csrf']);
 $router->get('/', [HomeController::class, 'index']);
 $router->get('/dashboard', [HomeController::class, 'index']);
 $router->get('/health', [HealthController::class, 'index']);

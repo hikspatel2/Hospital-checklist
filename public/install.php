@@ -347,7 +347,7 @@ ENV;
                 </div>
             </div>
 
-            <form method="POST" action="install.php" novalidate>
+            <form method="POST" action="" novalidate>
                 <h5 class="fw-bold mb-3 text-navy">
                     <i class="bi bi-database-fill-gear me-1 text-primary"></i> Hostinger MySQL Credentials
                 </h5>
