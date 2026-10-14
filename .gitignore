@@ -1,0 +1,31 @@
+# Environment & Local Server Configuration
+.env
+.env.local
+.env.production
+
+# Storage & Uploads
+/storage/logs/*.log
+/storage/backups/*.sql
+/storage/backups/*.gz
+/storage/uploads/*
+!/storage/logs/.gitkeep
+!/storage/backups/.gitkeep
+!/storage/uploads/.gitkeep
+
+# Vendor / Dependencies
+/vendor/
+composer.lock
+
+# IDE & OS Metadata
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.swp

@@ -1,0 +1,289 @@
+/* ==============================================================================
+ * Sheth L.G. General Hospital, Ahmedabad
+ * Multi-Floor Inspection & Complaint Facility Management System
+ * Design System & UI Styling
+ * ============================================================================== */
+
+:root {
+    --hospital-navy: #0f2c59;
+    --hospital-navy-dark: #0a1c38;
+    --hospital-navy-light: #163e7a;
+    --hospital-blue: #2563eb;
+    --hospital-blue-hover: #1d4ed8;
+    --hospital-bg: #f4f6f9;
+    --hospital-surface: #ffffff;
+    --hospital-border: #e2e8f0;
+    --hospital-text: #1e293b;
+    --hospital-text-muted: #64748b;
+    --sidebar-width: 280px;
+    --header-height: 70px;
+    --transition-speed: 0.25s;
+}
+
+body.hospital-body {
+    background-color: var(--hospital-bg);
+    color: var(--hospital-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==============================================================================
+ * Top Navigation Header
+ * ============================================================================== */
+.hospital-navbar {
+    background-color: var(--hospital-navy);
+    height: var(--header-height);
+    box-shadow: 0 4px 12px rgba(10, 28, 56, 0.15);
+    z-index: 1030;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hospital-badge {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.hospital-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.hospital-subtitle {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.bg-navy-dark {
+    background-color: var(--hospital-navy-dark) !important;
+}
+
+.btn-navy {
+    background-color: var(--hospital-navy);
+    color: #ffffff;
+    border: 1px solid var(--hospital-navy);
+    font-weight: 500;
+    transition: all var(--transition-speed);
+}
+
+.btn-navy:hover, .btn-navy:focus {
+    background-color: var(--hospital-blue);
+    color: #ffffff;
+    border-color: var(--hospital-blue);
+}
+
+.btn-outline-navy {
+    color: var(--hospital-navy);
+    border-color: var(--hospital-navy);
+    background-color: transparent;
+    font-weight: 500;
+}
+
+.btn-outline-navy:hover {
+    background-color: var(--hospital-navy);
+    color: #ffffff;
+}
+
+.btn-navy-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-speed);
+}
+
+.btn-navy-icon:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.user-avatar-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0284c7, #0f2c59);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ==============================================================================
+ * Layout & Sidebar Structure
+ * ============================================================================== */
+.hospital-layout-container {
+    display: flex;
+    flex: 1;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.hospital-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--hospital-navy);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    min-height: calc(100vh - var(--header-height));
+    transition: transform var(--transition-speed) ease-in-out;
+    z-index: 1020;
+}
+
+.facility-icon-box {
+    width: 32px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-menu-wrapper {
+    overflow-y: auto;
+    max-height: calc(100vh - var(--header-height) - 150px);
+}
+
+.sidebar-link {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all var(--transition-speed);
+}
+
+.sidebar-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-link.active {
+    color: #ffffff;
+    background-color: var(--hospital-blue);
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.sidebar-icon {
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+
+.sidebar-link.active .sidebar-icon {
+    opacity: 1;
+}
+
+/* ==============================================================================
+ * Main Content Area
+ * ============================================================================== */
+.hospital-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--hospital-bg);
+}
+
+/* ==============================================================================
+ * Hospital Cards & Metrics
+ * ============================================================================== */
+.hospital-card {
+    background-color: var(--hospital-surface);
+    border: 1px solid var(--hospital-border);
+    border-radius: 12px;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.hospital-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -4px rgba(15, 23, 42, 0.04) !important;
+}
+
+.metric-card .metric-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+}
+
+.text-navy {
+    color: var(--hospital-navy) !important;
+}
+
+/* Pulse dot for live status */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulse 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+    display: inline-block;
+}
+
+@keyframes pulse {
+    to {
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+}
+
+/* ==============================================================================
+ * Responsive Drawer for Mobile & Tablet
+ * ============================================================================== */
+@media (max-width: 991.98px) {
+    .hospital-sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+        min-height: 100vh;
+        z-index: 1050;
+    }
+
+    .hospital-sidebar.show {
+        transform: translateX(0);
+        box-shadow: 10px 0 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(2px);
+        z-index: 1040;
+        display: none;
+    }
+
+    .sidebar-backdrop.show {
+        display: block;
+    }
+
+    .sidebar-menu-wrapper {
+        max-height: calc(100vh - 120px);
+    }
+}

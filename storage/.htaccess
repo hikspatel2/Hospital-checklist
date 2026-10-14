@@ -1,0 +1,17 @@
+# ==============================================================================
+# Sheth L.G. General Hospital - Storage Directory Access Restriction
+# ==============================================================================
+# Deny all direct web/HTTP access to storage directory and its subdirectories
+# (backups, logs, temporary files, and uploaded evidence files).
+# Uploaded files and backups must only be streamed via authorized controller endpoints.
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>
+
+Options -Indexes

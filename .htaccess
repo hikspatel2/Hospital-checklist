@@ -1,0 +1,33 @@
+# ==============================================================================
+# Sheth L.G. General Hospital - Root Directory Protection & Routing
+# Designed for Hostinger Shared Hosting
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. Block direct access to environment files, git, and package manifests
+    RewriteRule ^(\.env|\.git|composer\.(json|lock)|package(-lock)?\.json) - [F,L]
+
+    # 2. Block direct HTTP access to core application folders and raw assets
+    RewriteRule ^(app|config|database|docs|scripts|storage|vendor)(\/|$) - [F,L]
+    RewriteRule \.(md|sql|log|json|lock)$ - [F,L]
+
+    # 3. Transparently route incoming web traffic into the public/ directory
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Disable directory listing globally
+Options -Indexes
+
+# Prevent access to hidden files
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

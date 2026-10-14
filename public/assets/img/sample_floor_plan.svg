@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%" id="hospital-floor-plan-svg">
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e2e8f0" stroke-width="0.7"/>
+    </pattern>
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <style>
+    .grid-bg { fill: url(#grid); }
+    .wall-outer { fill: none; stroke: #0f2c59; stroke-width: 6; stroke-linejoin: round; }
+    .wall-inner { fill: none; stroke: #334155; stroke-width: 3; }
+    .corridor { fill: #f8fafc; }
+    
+    .room-zone {
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      fill-opacity: 0.85;
+      stroke: #0f2c59;
+      stroke-width: 2;
+    }
+    .room-zone:hover {
+      fill-opacity: 1;
+      stroke-width: 3.5;
+      stroke: #0284c7;
+      filter: drop-shadow(0 4px 8px rgba(15, 44, 89, 0.25));
+    }
+    .room-zone.selected {
+      stroke: #f59e0b;
+      stroke-width: 4;
+      stroke-dasharray: 6 3;
+    }
+
+    /* Inspection Status Overlays */
+    .status-compliant { fill: #d1e7dd; stroke: #198754; }
+    .status-warning   { fill: #fff3cd; stroke: #ffc107; }
+    .status-critical  { fill: #f8d7da; stroke: #dc3545; }
+    .status-pending   { fill: #e0e7ff; stroke: #4f46e5; }
+    .status-inactive  { fill: #f1f5f9; stroke: #94a3b8; }
+
+    .room-label { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 700; fill: #0f2c59; pointer-events: none; text-anchor: middle; }
+    .room-sub { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; font-weight: 500; fill: #64748b; pointer-events: none; text-anchor: middle; }
+    .badge-icon { pointer-events: none; }
+  </style>
+
+  <!-- Background Grid -->
+  <rect width="1000" height="650" class="grid-bg"/>
+
+  <!-- Hospital Floor Outer Boundary -->
+  <rect x="30" y="30" width="940" height="590" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#card-shadow)"/>
+  <rect x="30" y="30" width="940" height="590" rx="12" class="wall-outer"/>
+
+  <!-- Main Central Corridor -->
+  <rect x="250" y="270" width="500" height="110" class="corridor wall-inner"/>
+  <text x="500" y="330" class="room-sub" font-size="13" letter-spacing="3" fill="#94a3b8">MAIN CENTRAL CORRIDOR</text>
+
+  <!-- West Corridor / Lift Lobby -->
+  <rect x="50" y="270" width="200" height="110" class="corridor wall-inner"/>
+  <text x="150" y="325" class="room-label" font-size="12">LIFT LOBBY &amp; STAIRS</text>
+  <text x="150" y="345" class="room-sub">Main Patient Elevator</text>
+
+  <!-- East Emergency Corridor -->
+  <rect x="750" y="270" width="200" height="110" class="corridor wall-inner"/>
+
+  <!-- ================= NORTH WING ROOMS ================= -->
+
+  <!-- ROOM 1: ICU Ward A (Top Left) -->
+  <g class="floor-zone-group" id="zone-icu-a" data-id="1" data-code="ICU-A" data-name="Intensive Care Unit (ICU-A)" data-type="icu" data-capacity="8">
+    <rect id="area-icu-a" x="50" y="50" width="270" height="200" rx="6" class="room-zone status-compliant"/>
+    <text x="185" y="140" class="room-label">ICU WARD - A</text>
+    <text x="185" y="160" class="room-sub">8 Critical Beds | High Dependency</text>
+    <circle cx="80" cy="80" r="14" fill="#198754" fill-opacity="0.2"/>
+    <text x="80" y="85" text-anchor="middle" font-size="12" fill="#198754" font-weight="bold">✓</text>
+  </g>
+
+  <!-- ROOM 2: Central Nursing Station (Top Center) -->
+  <g class="floor-zone-group" id="zone-nursing-station" data-id="2" data-code="NURSE-01" data-name="Central Nursing Command Station" data-type="nursing_station" data-capacity="0">
+    <rect id="area-nursing-station" x="340" y="50" width="320" height="200" rx="6" class="room-zone status-compliant"/>
+    <text x="500" y="135" class="room-label">NURSING COMMAND STATION</text>
+    <text x="500" y="155" class="room-sub">Central Monitoring &amp; Medicine Store</text>
+    <circle cx="500" cy="180" r="16" fill="#0f2c59"/>
+    <text x="500" y="185" text-anchor="middle" font-size="14" fill="#ffffff" font-weight="bold">+</text>
+  </g>
+
+  <!-- ROOM 3: General Ward 101 (Top Right) -->
+  <g class="floor-zone-group" id="zone-ward-101" data-id="3" data-code="GW-101" data-name="General Ward 101" data-type="general" data-capacity="20">
+    <rect id="area-ward-101" x="680" y="50" width="270" height="200" rx="6" class="room-zone status-warning"/>
+    <text x="815" y="140" class="room-label">GENERAL WARD 101</text>
+    <text x="815" y="160" class="room-sub">20 Inpatient Beds</text>
+    <circle cx="710" cy="80" r="14" fill="#ffc107" fill-opacity="0.2"/>
+    <text x="710" y="85" text-anchor="middle" font-size="12" fill="#d97706" font-weight="bold">!</text>
+  </g>
+
+  <!-- ================= SOUTH WING ROOMS ================= -->
+
+  <!-- ROOM 4: Pediatric & Maternity Ward (Bottom Left) -->
+  <g class="floor-zone-group" id="zone-ward-102" data-id="4" data-code="PED-102" data-name="Pediatric &amp; Maternity Care" data-type="pediatric" data-capacity="12">
+    <rect id="area-ward-102" x="50" y="400" width="270" height="200" rx="6" class="room-zone status-compliant"/>
+    <text x="185" y="495" class="room-label">PEDIATRIC CARE WARD</text>
+    <text x="185" y="515" class="room-sub">12 Pediatric Care Beds</text>
+  </g>
+
+  <!-- ROOM 5: Duty Doctor & Consultation Cabins (Bottom Center-Left) -->
+  <g class="floor-zone-group" id="zone-doctor-cabin" data-id="5" data-code="DOC-CAB" data-name="Duty Medical Officer Cabin" data-type="doctor_cabin" data-capacity="0">
+    <rect id="area-doctor-cabin" x="340" y="400" width="150" height="200" rx="6" class="room-zone status-pending"/>
+    <text x="415" y="495" class="room-label" font-size="13">DOCTOR CABIN</text>
+    <text x="415" y="515" class="room-sub">Duty Physician</text>
+  </g>
+
+  <!-- ROOM 6: Sanitation Block & Washrooms (Bottom Center-Right) -->
+  <g class="floor-zone-group" id="zone-washroom" data-id="6" data-code="REST-BLK" data-name="Sanitation &amp; Hygiene Block" data-type="washroom" data-capacity="0">
+    <rect id="area-washroom" x="510" y="400" width="150" height="200" rx="6" class="room-zone status-critical"/>
+    <text x="585" y="495" class="room-label" font-size="13">HYGIENE BLOCK</text>
+    <text x="585" y="515" class="room-sub">Washrooms &amp; Scrub</text>
+    <circle cx="585" cy="545" r="14" fill="#dc3545" fill-opacity="0.2"/>
+    <text x="585" y="550" text-anchor="middle" font-size="12" fill="#dc3545" font-weight="bold">✕</text>
+  </g>
+
+  <!-- ROOM 7: Biomedical Waste & Storage (Bottom Right) -->
+  <g class="floor-zone-group" id="zone-waste-disposal" data-id="7" data-code="BMW-ZONE" data-name="Biomedical Waste Segregation Area" data-type="waste_disposal" data-capacity="0">
+    <rect id="area-waste-disposal" x="680" y="400" width="170" height="200" rx="6" class="room-zone status-compliant"/>
+    <text x="765" y="495" class="room-label" font-size="13">WASTE DISPOSAL</text>
+    <text x="765" y="515" class="room-sub">Color-coded Bins</text>
+  </g>
+
+  <!-- ROOM 8: Emergency Exit & Fire Stairwell (Far Bottom Right) -->
+  <g class="floor-zone-group" id="zone-fire-exit" data-id="8" data-code="EXIT-01" data-name="Emergency Fire Escape" data-type="emergency_exit" data-capacity="0">
+    <rect id="area-fire-exit" x="860" y="400" width="90" height="200" rx="6" class="room-zone status-compliant"/>
+    <text x="905" y="495" class="room-label" font-size="11" transform="rotate(-90 905 495)">FIRE ESCAPE</text>
+  </g>
+
+  <!-- Architectural Compass Rose (Top Right Corner) -->
+  <g transform="translate(930, 70)">
+    <circle cx="0" cy="0" r="18" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+    <path d="M 0 -15 L 4 0 L -4 0 Z" fill="#dc3545"/>
+    <path d="M 0 15 L 4 0 L -4 0 Z" fill="#64748b"/>
+    <text x="0" y="-18" font-size="10" font-weight="bold" fill="#dc3545" text-anchor="middle">N</text>
+  </g>
+</svg>
