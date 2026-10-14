@@ -73,32 +73,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $allowRun) {
 
             // 2. Execute Complete Database Schema (Tables + Constraints + Initial Seeds)
             $executeSql = function(PDO $db, string $rawSql): void {
-                // Try direct execution first (works if multi-statements supported)
-                try {
-                    $db->exec($rawSql);
-                } catch (\Throwable $e) {
-                    // Fallback to statement-by-statement execution
-                    $cleanLines = [];
-                    foreach (explode("\n", $rawSql) as $line) {
-                        $trim = trim($line);
-                        if ($trim === '' || str_starts_with($trim, '--') || str_starts_with($trim, '/*')) {
-                            continue;
-                        }
-                        $cleanLines[] = $line;
+                $cleanLines = [];
+                foreach (explode("\n", $rawSql) as $line) {
+                    $trim = trim($line);
+                    if ($trim === '' || str_starts_with($trim, '--') || str_starts_with($trim, '/*')) {
+                        continue;
                     }
-                    $cleaned = implode("\n", $cleanLines);
-                    $queries = preg_split('/;\s*(\r?\n|$)/', $cleaned);
-                    foreach ($queries as $query) {
-                        $query = trim($query);
-                        if (!empty($query)) {
-                            try {
-                                $db->exec($query);
-                            } catch (\Throwable $subEx) {
-                                // Ignore non-fatal duplicate/exists errors
-                                if (!str_contains($subEx->getMessage(), 'already exists') && 
-                                    !str_contains($subEx->getMessage(), 'Duplicate column')) {
-                                    throw $subEx;
-                                }
+                    $cleanLines[] = $line;
+                }
+                $cleaned = implode("\n", $cleanLines);
+                $queries = preg_split('/;\s*(\r?\n|$)/', $cleaned);
+                foreach ($queries as $query) {
+                    $query = trim($query);
+                    if (!empty($query)) {
+                        try {
+                            $db->exec($query);
+                        } catch (\Throwable $subEx) {
+                            $msg = $subEx->getMessage();
+                            $isIgnorable = str_contains($msg, 'already exists') 
+                                        || str_contains($msg, 'Duplicate column')
+                                        || str_contains($msg, 'Duplicate key')
+                                        || str_contains($msg, 'Duplicate entry')
+                                        || str_contains($msg, "Can't DROP")
+                                        || str_contains($msg, "check that it exists")
+                                        || str_contains($msg, "1091")
+                                        || str_contains($msg, "1060")
+                                        || str_contains($msg, "1061");
+
+                            if (!$isIgnorable) {
+                                throw $subEx;
                             }
                         }
                     }

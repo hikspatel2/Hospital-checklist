@@ -9,11 +9,21 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- 1. Enhance SLA Policies (Support Category + Priority combinations)
 ALTER TABLE `sla_policies` 
-    ADD COLUMN `category` VARCHAR(50) NOT NULL DEFAULT 'all' AFTER `policy_name`;
+    ADD COLUMN IF NOT EXISTS `category` VARCHAR(50) NOT NULL DEFAULT 'all' AFTER `policy_name`;
 
--- Drop original unique priority constraint and add compound unique key
-ALTER TABLE `sla_policies` DROP INDEX `priority`;
-ALTER TABLE `sla_policies` ADD UNIQUE KEY `uk_sla_cat_priority` (`category`, `priority`);
+-- Drop original unique priority constraint safely if it exists
+SET @exist_p := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'sla_policies' AND index_name = 'priority');
+SET @sql_p := IF(@exist_p > 0, 'ALTER TABLE `sla_policies` DROP INDEX `priority`', 'SELECT 1');
+PREPARE stmt_p FROM @sql_p;
+EXECUTE stmt_p;
+DEALLOCATE PREPARE stmt_p;
+
+-- Add compound unique key safely if not already present
+SET @exist_cp := (SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = 'sla_policies' AND index_name = 'uk_sla_cat_priority');
+SET @sql_cp := IF(@exist_cp = 0, 'ALTER TABLE `sla_policies` ADD UNIQUE KEY `uk_sla_cat_priority` (`category`, `priority`)', 'SELECT 1');
+PREPARE stmt_cp FROM @sql_cp;
+EXECUTE stmt_cp;
+DEALLOCATE PREPARE stmt_cp;
 
 -- Seed standard category-specific policies if they do not exist
 INSERT INTO `sla_policies` (`policy_name`, `category`, `priority`, `response_time_hours`, `resolution_time_hours`, `escalation_email`, `is_active`)
