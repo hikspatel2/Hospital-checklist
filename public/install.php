@@ -58,38 +58,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $allowRun) {
         try {
             // 1. Test PDO connection
             $dsn = "mysql:host={$dbHost};port={$dbPort};dbname={$dbName};charset=utf8mb4";
-            $pdo = new PDO($dsn, $dbUser, $dbPass, [
+            $pdoOptions = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
-            ]);
+            ];
+            if (defined('PDO::MYSQL_ATTR_MULTI_STATEMENTS')) {
+                $pdoOptions[PDO::MYSQL_ATTR_MULTI_STATEMENTS] = true;
+            }
+            $pdo = new PDO($dsn, $dbUser, $dbPass, $pdoOptions);
 
             // Guarantee Asia/Kolkata timezone and utf8mb4 collation
             $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci, time_zone = '+05:30'");
 
             // 2. Execute Complete Database Schema (Tables + Constraints + Initial Seeds)
+            $executeSql = function(PDO $db, string $rawSql): void {
+                // Try direct execution first (works if multi-statements supported)
+                try {
+                    $db->exec($rawSql);
+                } catch (\Throwable $e) {
+                    // Fallback to statement-by-statement execution
+                    $cleanLines = [];
+                    foreach (explode("\n", $rawSql) as $line) {
+                        $trim = trim($line);
+                        if ($trim === '' || str_starts_with($trim, '--') || str_starts_with($trim, '/*')) {
+                            continue;
+                        }
+                        $cleanLines[] = $line;
+                    }
+                    $cleaned = implode("\n", $cleanLines);
+                    $queries = preg_split('/;\s*(\r?\n|$)/', $cleaned);
+                    foreach ($queries as $query) {
+                        $query = trim($query);
+                        if (!empty($query)) {
+                            try {
+                                $db->exec($query);
+                            } catch (\Throwable $subEx) {
+                                // Ignore non-fatal duplicate/exists errors
+                                if (!str_contains($subEx->getMessage(), 'already exists') && 
+                                    !str_contains($subEx->getMessage(), 'Duplicate column')) {
+                                    throw $subEx;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
             $schemaFile = $basePath . '/database/schema_complete.sql';
-            if (!file_exists($schemaFile)) {
-                // Fallback to migrating directory files in order
+            if (file_exists($schemaFile)) {
+                $sql = file_get_contents($schemaFile);
+                if ($sql) {
+                    $executeSql($pdo, $sql);
+                }
+            } else {
                 $schemaMigrations = glob($basePath . '/database/migrations/*.sql');
                 sort($schemaMigrations);
                 foreach ($schemaMigrations as $migration) {
                     $sql = file_get_contents($migration);
                     if ($sql) {
-                        $pdo->exec($sql);
+                        $executeSql($pdo, $sql);
                     }
                 }
                 $seedFile = $basePath . '/database/seeds/dev_seed.sql';
                 if (file_exists($seedFile)) {
                     $seedSql = file_get_contents($seedFile);
                     if ($seedSql) {
-                        $pdo->exec($seedSql);
+                        $executeSql($pdo, $seedSql);
                     }
-                }
-            } else {
-                $sql = file_get_contents($schemaFile);
-                if ($sql) {
-                    $pdo->exec($sql);
                 }
             }
 

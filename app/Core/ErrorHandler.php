@@ -81,9 +81,9 @@ class ErrorHandler
 
     private static function renderErrorView(int $statusCode, Throwable $e): void
     {
-        $debug = self::$debug;
+        $debug = self::$debug || (isset($_GET['debug']) && $_GET['debug'] === '1');
         $title = $statusCode === 404 ? '404 - Page Not Found' : '500 - Server Error';
-        $message = $statusCode === 404 ? 'The requested hospital facility resource or page could not be found.' : 'An internal system error occurred. The incident has been recorded in the audit logs.';
+        $message = $statusCode === 404 ? 'The requested hospital facility resource or page could not be found.' : 'An internal system error occurred. Details are provided below:';
 
         ?>
         <!DOCTYPE html>
@@ -117,19 +117,21 @@ class ErrorHandler
                     <h3 class="h5 fw-bold mb-3"><?= htmlspecialchars($title) ?></h3>
                     <p class="text-secondary mb-4"><?= htmlspecialchars($message) ?></p>
 
-                    <?php if ($debug): ?>
-                        <div class="text-start alert alert-danger">
-                            <strong>Debug Exception:</strong> <?= htmlspecialchars($e->getMessage()) ?><br>
-                            <small>In <?= htmlspecialchars($e->getFile()) ?>:<?= $e->getLine() ?></small>
+                    <div class="text-start alert alert-danger my-3">
+                        <strong>Error Details:</strong> <?= htmlspecialchars($e->getMessage()) ?><br>
+                        <?php if ($debug): ?>
+                            <small class="text-secondary">In <?= htmlspecialchars($e->getFile()) ?>:<?= $e->getLine() ?></small>
                             <div class="trace-box"><?= htmlspecialchars($e->getTraceAsString()) ?></div>
-                        </div>
-                    <?php endif; ?>
+                        <?php else: ?>
+                            <div class="mt-2"><small class="text-muted">For complete call stack trace, append <code>?debug=1</code> to the URL.</small></div>
+                        <?php endif; ?>
+                    </div>
 
-                    <?php if (str_contains($e->getMessage(), 'Database Connection Error') || str_contains($e->getMessage(), 'Access denied') || str_contains($e->getMessage(), 'refused')): ?>
+                    <?php if (str_contains($e->getMessage(), 'Database Connection Error') || str_contains($e->getMessage(), 'Access denied') || str_contains($e->getMessage(), 'refused') || str_contains($e->getMessage(), "doesn't exist")): ?>
                         <div class="text-start alert alert-warning border-warning shadow-sm my-3 p-3">
-                            <h6 class="fw-bold text-dark mb-1">⚙️ Hostinger Setup Required</h6>
-                            <p class="small text-muted mb-2">The system cannot connect to the MySQL database. Run the 1-Click Setup Wizard to configure your Hostinger database credentials and initialize all tables automatically.</p>
-                            <a href="/install.php" class="btn btn-warning btn-sm fw-bold">🚀 Run 1-Click Hostinger Setup (/install.php)</a>
+                            <h6 class="fw-bold text-dark mb-1">⚙️ Database Setup Required</h6>
+                            <p class="small text-muted mb-2">The hospital database tables have not been created or configured yet. Click below to run the 1-Click Setup Wizard:</p>
+                            <a href="/install" class="btn btn-warning btn-sm fw-bold">🚀 Run 1-Click Hostinger Setup (/install)</a>
                         </div>
                     <?php endif; ?>
 
